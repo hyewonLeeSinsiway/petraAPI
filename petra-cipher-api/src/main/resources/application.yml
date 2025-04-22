@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    driver-class-name: com.soha.jdbc.SohaDriver
+    url: jdbc:soha:mysql://192.168.227.16:6700/(auth = (user_name = dgadmin))?characterEncoding=UTF-8
+    username: (service = (svc = MASTER) (auth_type = 1))
+    password: petra@one1
+
+logging:
+  level:
+    jdbc:
+      sqlonly: DEBUG
+      sqltiming: INFO
+      audit: WARN
+      resultset: WARN
+      resultsettable: WARN
+      connection: WARN
+      springframework: INFO
+      jdbc.core: TRACE
+
+server:
+  port: 8080
