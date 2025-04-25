@@ -2,12 +2,6 @@ const mysql = require('mysql');
 require('dotenv').config({path: './.env'});
 const util = require('util');
 
-console.log('DB_HOST:', process.env.DB_HOST);
-console.log('DB_USER:', process.env.DB_USER);
-console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
-console.log('DB_NAME:', process.env.DB_NAME);
-console.log('DB_PORT:', process.env.DB_PORT);
-
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -17,6 +11,17 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
+});
+
+// Log connection details when a connection is established
+pool.on('connection', (connection) => {
+  console.log('New connection established with ID:', connection.threadId);
+  console.log('Connection details:', {
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT
+  });
 });
 
 // Promisify the pool.query method for async/await support
