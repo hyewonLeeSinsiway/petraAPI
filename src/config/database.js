@@ -1,6 +1,5 @@
-const mysql = require('mysql');
+const mysql = require('mysql2/promise');
 require('dotenv').config();
-const util = require('util');
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -13,14 +12,10 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-// Promisify the pool.query method for async/await support
-pool.query = util.promisify(pool.query);
-
 // Test connection and log details
-pool.getConnection((err, connection) => {
-  if (err) {
-    console.error('Error connecting to the database:', err);
-  } else {
+(async () => {
+  try {
+    const connection = await pool.getConnection();
     console.log('New connection established with ID:', connection.threadId);
     console.log('Connection details:', {
       host: process.env.DB_HOST,
@@ -29,8 +24,10 @@ pool.getConnection((err, connection) => {
       port: process.env.DB_PORT
     });
     connection.release(); // Release the connection back to the pool
+  } catch (err) {
+    console.error('Error connecting to the database:', err);
   }
-});
+})();
 
 module.exports = pool;
 

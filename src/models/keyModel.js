@@ -2,7 +2,7 @@ const db = require('../config/database');
 
 class KeyModel {
   async create({ id, material, type, description }) {
-    const result = await db.query(
+    const [result] = await db.query(
       'INSERT INTO `keys` (id, material, type, description) VALUES (?, ?, ?, ?)',
       [id, material, type, description]
     );
@@ -10,11 +10,11 @@ class KeyModel {
   }
 
   async findById(id) {
-    const rows = await db.query(
+    const [rows] = await db.query(
       'SELECT * FROM `keys` WHERE id = ?',
       [id]
     );
-    return rows[0];
+    return rows[0]; // 첫 번째 결과 반환
   }
 
   async findAll({ status, page, limit }) {
@@ -27,7 +27,7 @@ class KeyModel {
     }
 
     // 전체 레코드 수 조회
-    const countResult = await db.query(
+    const [countResult] = await db.query(
       query.replace('*', 'COUNT(*) as total'),
       params
     );
@@ -38,7 +38,7 @@ class KeyModel {
     const offset = (page - 1) * limit;
     params.push(limit, offset);
 
-    const rows = await db.query(query, params);
+    const [rows] = await db.query(query, params);
 
     return {
       keys: rows,
@@ -49,7 +49,7 @@ class KeyModel {
   }
 
   async updateStatus(id, status) {
-    const result = await db.query(
+    const [result] = await db.query(
       'UPDATE `keys` SET status = ? WHERE id = ? AND deleted_at IS NULL',
       [status, id]
     );
@@ -62,7 +62,7 @@ class KeyModel {
   }
 
   async softDelete(id) {
-    const result = await db.query(
+    const [result] = await db.query(
       'UPDATE `keys` SET deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL',
       [id]
     );
@@ -75,7 +75,7 @@ class KeyModel {
   }
 
   async rotate(id, newMaterial) {
-    const result = await db.query(
+    const [result] = await db.query(
       'UPDATE `keys` SET material = ?, version = version + 1 WHERE id = ? AND deleted_at IS NULL',
       [newMaterial, id]
     );
