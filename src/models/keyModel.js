@@ -11,7 +11,8 @@ class KeyModel {
 
   async findById(id) {
     const [rows] = await db.execute(
-      'SELECT * FROM pct_encrypt_key WHERE key_id = ?',
+      // 'SELECT * FROM pct_encrypt_key WHERE key_id = ?',
+      'select * from dual;',
       [id]
     );
     return rows[0];
