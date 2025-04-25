@@ -1,5 +1,5 @@
 const mysql = require('mysql');
-require('dotenv').config({path: './.env'});
+require('dotenv').config();
 const util = require('util');
 
 const pool = mysql.createPool({
@@ -13,19 +13,24 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-// Log connection details when a connection is established
-pool.on('connection', (connection) => {
-  console.log('New connection established with ID:', connection.threadId);
-  console.log('Connection details:', {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT
-  });
-});
-
 // Promisify the pool.query method for async/await support
 pool.query = util.promisify(pool.query);
+
+// Test connection and log details
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error('Error connecting to the database:', err);
+  } else {
+    console.log('New connection established with ID:', connection.threadId);
+    console.log('Connection details:', {
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      database: process.env.DB_NAME,
+      port: process.env.DB_PORT
+    });
+    connection.release(); // Release the connection back to the pool
+  }
+});
 
 module.exports = pool;
 
